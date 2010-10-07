@@ -14,7 +14,7 @@ class User(object):
     """
     User
     """
-    def build(self, name, cpf):
+    def __init__(self, name, cpf):
         self.name = name
         self.cpf = cpf
 
@@ -23,7 +23,7 @@ class Car(object):
     """
     Car
     """
-    def build(self, license_plate, model, brand):
+    def __init__(self, license_plate, model, brand):
         self.license_plate = license_plate
         self.model = model
         self.brand = brand
