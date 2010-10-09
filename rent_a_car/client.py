@@ -4,7 +4,7 @@
 client.py
 
 Created by Diogenes Herminio on 2010-10-07.
-Copyright (c) 2010 __MyCompanyName__. All rights reserved.
+Copyright (c) 2010 CobraTeam. All rights reserved.
 """
 import re, sys
 from Pyro import core, naming
@@ -32,6 +32,8 @@ HELP = """
 # To create your account:
 # /create <name> <cpf>
 #   ex.: /create diogenes 011111111-11
+#
+# T
 """
 
 class Terminal(object):
@@ -50,6 +52,8 @@ class Terminal(object):
     
     def create(self):
         pass
+        
+    def status(self):
     
     def command(self, command):
         if re.match('^/exit$', command):
@@ -58,7 +62,8 @@ class Terminal(object):
             print HELP
         elif re.match('^/create', command):
             self.create()
-            
+        else:
+            print "Unknown command. Type /help to see existent commands."
     
 
 
