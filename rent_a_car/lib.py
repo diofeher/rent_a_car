@@ -11,7 +11,7 @@ class User(object):
     """
     User
     """
-    def build(self, name, cpf):
+    def __init__(self, name, cpf):
         self.name = name
         self.cpf = cpf
       
@@ -20,7 +20,7 @@ class Car(object):
     """
     Car
     """
-    def build(self, license_plate, model, brand):
+    def __init__(self, license_plate, model, brand):
         self.license_plate = license_plate
         self.model = model
         self.brand = brand
@@ -29,16 +29,21 @@ class Factory(object):
     """
     docstring for Factory
     """
-    def create_user(self, *args):
+    def create_user(self, *args, **kwargs):
         """
         *args = (name, cpf)
         """
+        print args
         user = User(*args)
         return user
         
-    def create_car(self):
+    def create_car(self, *args):
         """
         *args = (license_plate, model, brand)
         """
         car = Car(*args)
         return car
+        
+if __name__=="__main__":
+    args = ('name', 'cpf')
+    user = User(*args)

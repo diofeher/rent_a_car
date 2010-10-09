@@ -45,23 +45,41 @@ class Terminal(object):
         
         # Pyro initialization
         locator = naming.NameServerLocator()
-        self.ns = locator.getNS()
+        ns = locator.getNS()
+        
+        # Gettin` factory
+        uri = ns.resolve('factory')
+        self.factory = core.getAttrProxyForURI(uri)
         
     def login(self):
         pass
     
-    def create(self):
-        pass
-        
+    def create(self, command):
+        match = re.match(r'^/create ([A-Za-z]+) ([\d]+)', command)
+        if match and not self.logged:
+            name = match.group(1)
+            cpf = match.group(2)
+            print '- Creating user...'
+            user = self.factory.create_user(name, cpf)
+            self.user = user
+            print user
+            #user = self.factory.create_user(name, cpf)
+            print '- User created'
+            print "- Automatically logged - Don't need to log in."
+            #return user
+        else:
+            print '- Not created'
+
     def status(self):
+        pass
     
     def command(self, command):
-        if re.match('^/exit$', command):
+        if re.match(r'^/exit$', command):
             sys.exit()
-        elif re.match('^/help$', command):
+        elif re.match(r'^/help$', command):
             print HELP
-        elif re.match('^/create', command):
-            self.create()
+        elif re.match(r'^/create', command):
+            self.create(command)
         else:
             print "Unknown command. Type /help to see existent commands."
     

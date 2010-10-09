@@ -25,7 +25,7 @@ if __name__=="__main__":
         print e
      
     # connect factory to daemon
-    daemon.register(Factory, 'factory')
+    uri = daemon.connect(Factory(), 'factory')
     
     # enter server loop
     print "Started server..."
