@@ -17,7 +17,7 @@ class User(object):
     def __init__(self, name, cpf):
         self.name = name
         self.cpf = cpf
-        self.rent = None
+        self.debit = None
     
     def __repr__(self):
         return '<User object: %s>' % self.name
@@ -29,15 +29,25 @@ class User(object):
         @param car: Car
         @param car_rental: CarRental
         """
-        self.rent=(car,car_rental)
+        if not self.debit:
+            self.debit = car,car_rental
+            return self.debit
     
+    
+    def pay(self):
+        if self.debit is not None:
+            self.debit = None
+            return True
+        else:
+            return False
     
     def show_status(self):
-        return """
-        Name: %s
-        Cpf: %s
-        Status: %s
-        """ % (self.name, self.cpf, self.rent)
+        st = """
+        - Name: %s
+        - Cpf: %s
+        - Status: %s
+        """ % (self.name, self.cpf, self.debit or "No debits")
+        return st
     
     status = property(show_status)
 
@@ -50,6 +60,9 @@ class Car(object):
         self.license_plate = license_plate
         self.model = model
         self.brand = brand
+        
+    def __repr__(self):
+        return "<Car: %s>" % self.license_plate
 
 
 class CarRental(object):
@@ -61,7 +74,7 @@ class CarRental(object):
         self.name = name
         
     def __repr__(self):
-        return self.name
+        return "<CarRental: %s>" % self.name
 
 
 class Manager(object):

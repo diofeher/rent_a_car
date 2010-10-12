@@ -41,10 +41,23 @@ To see users of the system:
     /users
 """
 
+
 class Terminal(object):
     """
     docstring for Client
     """
+    def is_logged(_func):
+        """
+        Decorator used to test if user is logged in functions
+        """
+        def _new_func(self, *args, **kwargs):
+            if self.logged:
+                return _func(self, *args, **kwargs)
+            else:
+                print '- Not logged'
+        return _new_func
+    
+    
     def __init__(self):
         print HELLO
         self.logged = False
@@ -72,14 +85,11 @@ class Terminal(object):
         else:
             print 'You have already log. Type /logout to login with other user.'
     
-    
+    @is_logged
     def logout(self):
-        if self.logged:
-            self.logged = False
-            self.user = None
-            print '- Logout successful'
-        else:
-            print '- Not logged.'
+        self.logged = False
+        self.user = None
+        print '- Logout successful'
     
     
     def create_user(self, name, cpf):
@@ -103,18 +113,23 @@ class Terminal(object):
     
     
     def rent(self, license_plate):
-        if self.logged:
-            print '- Renting...'
-            self.user.rent(license_plate, self.car_rental)
-            print '- %s car rented in %s.' % (license_plate, self.car_rental)
+        print '- Renting...'
+        car = self.manager.search_car(license_plate)
+        debit = self.user.rent(car, self.car_rental)
+        if debit:
+            print '- %s rented in %s.' % (car, self.car_rental)
         else:
-            print '- Login so you can rent a car.'
+            print '- Pay your debit before rent another car.'
+            
+    def pay(self):
+        payed = self.user.pay()
+        if payed:
+            print '- Payed your debit. Now you can rent other cars.'
+        else:
+            print "- You didn't have rent any car."
     
     def status(self):
-        if self.logged:
-            print self.user.status
-        else:
-            print '- Not logged.'
+        print self.user.status
     
     
     def users(self):
@@ -136,6 +151,7 @@ class Terminal(object):
         create_car_match = re.match(r'^/create car (.+)', command)
         help_match = re.match(r'^/help$', command)
         logout_match = re.match(r'^/logout$', command)
+        pay_match = re.match(r'^/pay$', command)
         users_match = re.match(r'^/users$', command)
         status_match = re.match(r'^/status$', command)
         create_user_match = re.match(r'^/create user ([A-Za-z]+) ([\d]+)', command)
@@ -155,6 +171,8 @@ class Terminal(object):
             self.users()
         elif status_match:
             self.status()
+        elif pay_match:
+            self.pay()
         elif logout_match:
             self.logout()
         elif create_user_match:
@@ -163,7 +181,6 @@ class Terminal(object):
             self.login(login_match.group(1))
         else:
             print "Unknown command or wrong usage. Type /help to see existent commands."
-
 
 
 if __name__=='__main__':
@@ -177,7 +194,7 @@ if __name__=='__main__':
     init_file.close()
 
     while 1:
-        command = raw_input('> ')
+        command = raw_input('\n> ')
         if not command:
             terminal.exit()
         terminal.command(command)
