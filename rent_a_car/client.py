@@ -128,6 +128,8 @@ class Terminal(object):
         else:
             print "- You didn't have rent any car."
     
+    
+    @is_logged
     def status(self):
         print self.user.status
     
