@@ -17,14 +17,19 @@ class User(object):
     def __init__(self, name, cpf):
         self.name = name
         self.cpf = cpf
-        self.rents = {}
+        self.rent = None
     
     def __repr__(self):
         return '<User object: %s>' % self.name
     
     
     def rent(self, car, car_rental):
-        self.rents.update({car:car_rental})
+        """
+        Used to rent a car
+        @param car: Car
+        @param car_rental: CarRental
+        """
+        self.rent=(car,car_rental)
     
     
     def show_status(self):
@@ -32,7 +37,7 @@ class User(object):
         Name: %s
         Cpf: %s
         Status: %s
-        """ % (self.name, self.cpf, self.rents)
+        """ % (self.name, self.cpf, self.rent)
     
     status = property(show_status)
 
@@ -54,13 +59,9 @@ class CarRental(object):
     def __init__(self, name):
         self.users={}
         self.name = name
-    
-    
-    def rent_a_car(self, user, car):
-        """
-        @param user: User
-        @param car: Car
-        """
+        
+    def __repr__(self):
+        return self.name
 
 
 class Manager(object):
@@ -74,7 +75,7 @@ class Manager(object):
     
     
     def create_rental(self):
-        name = '%s' % random.randint(1, 1000)
+        name = '%sCarRental' % random.randint(1, 1000)
         rental = CarRental(name)
         self.rentals.update({name:rental})
         return rental

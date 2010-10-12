@@ -1,8 +1,8 @@
-/create_car XZA1, Veraneio, Chevrolet
-/create_car XZA2, Ipanema, Chevrolet
-/create_car XZA3, Kadet, Chevrolet
-/create_car XZA4, Omega, Chevrolet
-/create_car XZA5, Astra, Chevrolet
-/create_car XZA6, Celta, Chevrolet
-/create_car XZA7, Vectra, Chevrolet
-/create_car XZA8, Agile, Chevrolet
+/create car XZA1, Veraneio, Chevrolet
+/create car XZA2, Ipanema, Chevrolet
+/create car XZA3, Kadet, Chevrolet
+/create car XZA4, Omega, Chevrolet
+/create car XZA5, Astra, Chevrolet
+/create car XZA6, Celta, Chevrolet
+/create car XZA7, Vectra, Chevrolet
+/create car XZA8, Agile, Chevrolet

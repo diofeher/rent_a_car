@@ -82,11 +82,8 @@ class Terminal(object):
             print '- Not logged.'
     
     
-    def create(self, command):
-        match = re.match(r'^/create ([A-Za-z]+) ([\d]+)', command)
-        if match and not self.logged:
-            name = match.group(1)
-            cpf = match.group(2)
+    def create_user(self, name, cpf):
+        if name and cpf and not self.logged:
             print '- Creating user...'
             self.user = self.manager.create_user(name, cpf)
             self.logged = True
@@ -94,6 +91,15 @@ class Terminal(object):
             print "- Automatically logged - Don't need to log in."
         else:
             print '- Not created'
+    
+    
+    def create_car(self, attrs):
+        attrs=attrs.split(',')
+        if len(attrs) != 3:
+            print '- Wrong number of attributes'
+        else:
+            print '- Car created'
+            return self.manager.create_car(*attrs)
     
     
     def rent(self, license_plate):
@@ -127,11 +133,12 @@ class Terminal(object):
         # Building regex matches
         exit_match = re.match(r'^/exit$', command)
         rent_match = re.match(r'^/rent ([A-Za-z0-9]+)$', command)
+        create_car_match = re.match(r'^/create car (.+)', command)
         help_match = re.match(r'^/help$', command)
         logout_match = re.match(r'^/logout$', command)
         users_match = re.match(r'^/users$', command)
         status_match = re.match(r'^/status$', command)
-        create_match = re.match(r'^/create', command)
+        create_user_match = re.match(r'^/create user ([A-Za-z]+) ([\d]+)', command)
         login_match = re.match(r'^/login ([A-Za-z]+)', command)
         
         # Directing
@@ -142,14 +149,16 @@ class Terminal(object):
             self.rent(rent_match.group(1))
         elif help_match:
             print HELP
+        elif create_car_match:
+            self.create_car(create_car_match.group(1))
         elif users_match:
             self.users()
         elif status_match:
             self.status()
         elif logout_match:
             self.logout()
-        elif create_match:
-            self.create(command)
+        elif create_user_match:
+            self.create_user(create_user_match.group(1), create_user_match.group(2))
         elif login_match:
             self.login(login_match.group(1))
         else:
@@ -160,6 +169,13 @@ class Terminal(object):
 if __name__=='__main__':
     core.initClient()
     terminal = Terminal()
+
+    # create cars in initialization
+    init_file = open('commands.txt', 'r')
+    for f in init_file:
+        terminal.command(f)
+    init_file.close()
+
     while 1:
         command = raw_input('> ')
         if not command:
