@@ -21,23 +21,30 @@ HELLO = """
 """
 
 HELP = """
-# There are 4 commands:
-#
-# To rent a car:
-# /rent <car_number>
-#
-# To see your status:
-# /status
-#
-# To create your account:
-# /create <name> <cpf>
-#   ex.: /create diogenes 011111111-11
-#
-# T
+There are 4 commands:
+
+To rent a car:
+    /rent <car_number>
+
+To see your status:
+    /status
+
+To create your account:
+    /create <name> <cpf>
+        ex.: /create diofeher 011111111-11
+
+To login:
+    /login <name>
+        ex.: /login diofeher
+
+To see users of the system:
+    /users
 """
 
 class Terminal(object):
-    """docstring for Client"""
+    """
+    docstring for Client
+    """
     def __init__(self):
         print HELLO
         self.logged = False
@@ -45,14 +52,33 @@ class Terminal(object):
         
         # Pyro initialization
         locator = naming.NameServerLocator()
-        ns = locator.getNS()
+        self.ns = locator.getNS()
         
-        # Gettin` factory
-        uri = ns.resolve('factory')
-        self.factory = core.getAttrProxyForURI(uri)
+        car_rental_uri = self.ns.resolve('car_rental')
+        self.car_rental = core.getAttrProxyForURI(car_rental_uri)
         
-    def login(self):
-        pass
+        # Set the User_URI
+        # self.user_uri = self.ns.resolve('user')
+        # Anonymous function to show status
+        self.show_status = lambda x: "Nome: %s \nCpf: %s" % (x.name, x.cpf)
+        
+    
+    def login(self, name):
+        if not self.logged:
+            #self.ns.resolve('user_')
+            print 'Not logged.'
+        else:
+            print 'You have already log. Type /logout to login with other user.'
+            
+    
+    def logout(self):
+        if self.logged:
+            self.logged = False
+            self.user = None
+            print '- Logout successful'
+        else:
+            print '- Not logged.'
+    
     
     def create(self, command):
         match = re.match(r'^/create ([A-Za-z]+) ([\d]+)', command)
@@ -60,29 +86,63 @@ class Terminal(object):
             name = match.group(1)
             cpf = match.group(2)
             print '- Creating user...'
-            user = self.factory.create_user(name, cpf)
-            self.user = user
-            print user
-            #user = self.factory.create_user(name, cpf)
+            self.user = self.car_rental.create_user(name, cpf)
+            self.logged = True
             print '- User created'
             print "- Automatically logged - Don't need to log in."
             #return user
         else:
             print '- Not created'
 
+    
     def status(self):
-        pass
+        if self.logged:
+            print self.user.status
+        else:
+            print '- Not logged.'
+    
+    
+    def users(self):
+        print self.car_rental.users
+    
+    
+    def exit(self):
+        print 'Goodbye!'
+        sys.exit(0)
+    
     
     def command(self, command):
-        if re.match(r'^/exit$', command):
-            sys.exit()
-        elif re.match(r'^/help$', command):
+        """
+        Direct command to right function
+        """
+        # Building regex matches
+        exit_match = re.match(r'^/exit$', command)
+        help_match = re.match(r'^/help$', command)
+        logout_match = re.match(r'^/logout$', command)
+        users_match = re.match(r'^/users$', command)
+        status_match = re.match(r'^/status$', command)
+        create_match = re.match(r'^/create', command)
+        login_match = re.match(r'^/login ([A-Za-z]+)', command)
+        
+        # Directing
+        
+        if exit_match:
+            self.exit()
+        elif help_match:
             print HELP
-        elif re.match(r'^/create', command):
+        elif users_match:
+            self.users()
+        elif status_match:
+            self.status()
+        elif logout_match:
+            self.logout()
+        elif create_match:
             self.create(command)
+        elif login_match:
+            self.login(login_match.group(1))
         else:
-            print "Unknown command. Type /help to see existent commands."
-    
+            print "Unknown command or wrong usage. Type /help to see existent commands."
+
 
 
 if __name__=='__main__':
@@ -91,7 +151,5 @@ if __name__=='__main__':
     while 1:
         command = raw_input('> ')
         if not command:
-            break
+            terminal.exit()
         terminal.command(command)
-    
-    print '- Goodbye!'

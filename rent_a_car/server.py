@@ -9,10 +9,6 @@ Copyright (c) 2010 CobraTeam. All rights reserved.
 from Pyro import core, naming, errors
 import lib
 
-class Factory(lib.Factory, core.ObjBase):
-    pass
-
-
 if __name__=="__main__":
     core.initServer()
     daemon = core.Daemon()
@@ -20,12 +16,13 @@ if __name__=="__main__":
     daemon.useNameServer(ns)
 
     try:
-        ns.unregister('factory')
+        ns.unregister('car_rental')
     except errors.NamingError, e:
         print e
-     
-    # connect factory to daemon
-    uri = daemon.connect(Factory(), 'factory')
+    
+    car_rental = core.ObjBase()
+    car_rental.delegateTo(lib.CarRental())
+    daemon.connect(car_rental, 'car_rental')
     
     # enter server loop
     print "Started server..."
