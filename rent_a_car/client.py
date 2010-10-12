@@ -65,8 +65,14 @@ class Terminal(object):
     
     def login(self, name):
         if not self.logged:
-            #self.ns.resolve('user_')
-            print 'Not logged.'
+            try:
+                user = self.car_rental.search_user(name)
+                self.user = user
+                self.logged = True
+                print '- Logged'
+            except Exception, e:
+                print e
+                print '- Not logged'
         else:
             print 'You have already log. Type /logout to login with other user.'
             
