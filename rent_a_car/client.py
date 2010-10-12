@@ -96,6 +96,14 @@ class Terminal(object):
             print '- Not created'
     
     
+    def rent(self, license_plate):
+        if self.logged:
+            print '- Renting...'
+            self.user.rent(license_plate, self.car_rental)
+            print '- %s car rented in %s.' % (license_plate, self.car_rental)
+        else:
+            print '- Login so you can rent a car.'
+    
     def status(self):
         if self.logged:
             print self.user.status
@@ -118,6 +126,7 @@ class Terminal(object):
         """
         # Building regex matches
         exit_match = re.match(r'^/exit$', command)
+        rent_match = re.match(r'^/rent ([A-Za-z0-9]+)$', command)
         help_match = re.match(r'^/help$', command)
         logout_match = re.match(r'^/logout$', command)
         users_match = re.match(r'^/users$', command)
@@ -129,6 +138,8 @@ class Terminal(object):
         
         if exit_match:
             self.exit()
+        elif rent_match:
+            self.rent(rent_match.group(1))
         elif help_match:
             print HELP
         elif users_match:

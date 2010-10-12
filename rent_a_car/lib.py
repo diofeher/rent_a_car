@@ -17,18 +17,22 @@ class User(object):
     def __init__(self, name, cpf):
         self.name = name
         self.cpf = cpf
-    
+        self.rents = {}
     
     def __repr__(self):
         return '<User object: %s>' % self.name
+    
+    
+    def rent(self, car, car_rental):
+        self.rents.update({car:car_rental})
     
     
     def show_status(self):
         return """
         Name: %s
         Cpf: %s
-        Status: BLA
-        """ % (self.name, self.cpf)
+        Status: %s
+        """ % (self.name, self.cpf, self.rents)
     
     status = property(show_status)
 
@@ -92,6 +96,10 @@ class Manager(object):
         return self.users[name]
     
     
+    def search_car(self, license_plate):
+        return self.cars[license_plate]
+    
+    
     def create_car(self, license_plate, model, brand):
         """
         *args = (license_plate, model, brand)
@@ -100,23 +108,5 @@ class Manager(object):
         @param brand: brand
         """
         car = Car(license_plate, model, brand)
+        self.cars.update({license_plate:car})
         return car
-
-
-def init_server(rc):
-    """
-    Used to test if interface is working
-    """
-    user = rc.create_user('dio', '123')
-    gol = rc.create_car('XZA', 'Volkswagen', 'Gol')
-    
-    chevrolet1 = rc.create_car('XZA1', 'Veraneio', 'Chevrolet')
-    chevrolet2 = rc.create_car('XZA2', 'Ipanema', 'Chevrolet')
-    chevrolet3 = rc.create_car('XZA3', 'Kadet', 'Chevrolet')
-    chevrolet4 = rc.create_car('XZA4', 'Omega', 'Chevrolet')
-    chevrolet5 = rc.create_car('XZA5', 'Astra', 'Chevrolet')
-    chevrolet6 = rc.create_car('XZA6', 'Celta', 'Chevrolet')
-    chevrolet7 = rc.create_car('XZA7', 'Vectra', 'Chevrolet')
-    chevrolet8 = rc.create_car('XZA8', 'Agile', 'Chevrolet')
-    print user
-    print chevrolet1, chevrolet2, chevrolet3, chevrolet4
