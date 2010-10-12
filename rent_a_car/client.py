@@ -57,9 +57,6 @@ class Terminal(object):
         manager_uri = self.ns.resolve('manager')
         self.manager = core.getAttrProxyForURI(manager_uri)
         self.car_rental = self.manager.create_rental()
-        
-        # Anonymous function to show status
-        self.show_status = lambda x: "Nome: %s \nCpf: %s" % (x.name, x.cpf)
     
     
     def login(self, name):
