@@ -61,7 +61,7 @@ class Terminal(object):
         # self.user_uri = self.ns.resolve('user')
         # Anonymous function to show status
         self.show_status = lambda x: "Nome: %s \nCpf: %s" % (x.name, x.cpf)
-        
+    
     
     def login(self, name):
         if not self.logged:
@@ -75,7 +75,7 @@ class Terminal(object):
                 print '- Not logged'
         else:
             print 'You have already log. Type /logout to login with other user.'
-            
+    
     
     def logout(self):
         if self.logged:
@@ -99,7 +99,7 @@ class Terminal(object):
             #return user
         else:
             print '- Not created'
-
+    
     
     def status(self):
         if self.logged:

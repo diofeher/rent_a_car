@@ -17,18 +17,18 @@ class User(object):
         self.name = name
         self.cpf = cpf
         
-        
+    
     def __repr__(self):
         return '<User object: %s>' % self.name
         
-        
+    
     def show_status(self):
         return """
         Name: %s
         Cpf: %s
         Status: BLA
         """ % (self.name, self.cpf)
-        
+    
     status = property(show_status)
 
 
@@ -40,7 +40,7 @@ class Car(object):
         self.license_plate = license_plate
         self.model = model
         self.brand = brand
-        
+
 
 class CarRental(object):
     """
@@ -49,7 +49,7 @@ class CarRental(object):
     def __init__(self):
         self.users={}
         
-        
+    
     def create_user(self, name, cpf):
         """
         Create a new User
@@ -58,7 +58,7 @@ class CarRental(object):
         self.users.update({name:user})
         return user
         
-        
+    
     def search_user(self, name):
         """
         Method to look for user
@@ -72,7 +72,7 @@ class CarRental(object):
         """
         car = Car(license_plate, model, brand)
         return car
-        
+
 
 if __name__=="__main__":
     args = ('name', 'cpf')
