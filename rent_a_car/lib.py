@@ -17,11 +17,11 @@ class User(object):
     def __init__(self, name, cpf):
         self.name = name
         self.cpf = cpf
-        
+    
     
     def __repr__(self):
         return '<User object: %s>' % self.name
-        
+    
     
     def show_status(self):
         return """
@@ -67,15 +67,15 @@ class Manager(object):
         self.users = {}
         self.rentals = {}
         self.cars = {}
-
-
+    
+    
     def create_rental(self):
         name = '%s' % random.randint(1, 1000)
         rental = CarRental(name)
         self.rentals.update({name:rental})
         return rental
-        
-        
+    
+    
     def create_user(self, name, cpf):
         """
         Create a new User
@@ -83,15 +83,15 @@ class Manager(object):
         user = User(name, cpf)
         self.users.update({name:user})
         return user
-
-
+    
+    
     def search_user(self, name):
         """
         Method to look for user
         """
         return self.users[name]
-
-
+    
+    
     def create_car(self, license_plate, model, brand):
         """
         *args = (license_plate, model, brand)
@@ -101,8 +101,8 @@ class Manager(object):
         """
         car = Car(license_plate, model, brand)
         return car
-                
-                
+
+
 def init_server(rc):
     """
     Used to test if interface is working
