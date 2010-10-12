@@ -9,16 +9,6 @@ Copyright (c) 2010 CobraTeam. All rights reserved.
 import re, sys
 from Pyro import core, naming
 
-HELLO = """
-# Welcome to Rent A Car System.
-#
-# To get help, type /help
-#
-# To login, type /login <name>
-#
-# To exit, type /exit
-#
-"""
 
 HELP = """
 There are 4 commands:
@@ -59,7 +49,6 @@ class Terminal(object):
     
     
     def __init__(self):
-        print HELLO
         self.logged = False
         self.client = None
         
@@ -70,6 +59,18 @@ class Terminal(object):
         manager_uri = self.ns.resolve('manager')
         self.manager = core.getAttrProxyForURI(manager_uri)
         self.car_rental = self.manager.create_rental()
+        print """
+# Welcome to Rent A Car System.
+#
+# You are in %s
+#
+# To get help, type /help
+#
+# To login, type /login <name>
+#
+# To exit, type /exit
+#
+""" % self.car_rental
     
     
     def login(self, name):
@@ -112,18 +113,30 @@ class Terminal(object):
             return self.manager.create_car(*attrs)
     
     
+    @is_logged
     def rent(self, license_plate):
-        print '- Renting...'
+        """
+        Rent a car
+        """
         car = self.manager.search_car(license_plate)
+        rented = self.manager.rent_a_car(car)
+        if not rented:
+            print '%s is already rented.' % car
+            return
+        
+        print '- Renting...'
         debit = self.user.rent(car, self.car_rental)
         if debit:
             print '- %s rented in %s.' % (car, self.car_rental)
         else:
             print '- Pay your debit before rent another car.'
-            
+    
+    
+    @is_logged
     def pay(self):
-        payed = self.user.pay()
-        if payed:
+        car = self.user.pay()
+        if car:
+            self.manager.unrent(car.license_plate)
             print '- Payed your debit. Now you can rent other cars.'
         else:
             print "- You didn't have rent any car."
@@ -155,6 +168,8 @@ class Terminal(object):
         logout_match = re.match(r'^/logout$', command)
         pay_match = re.match(r'^/pay$', command)
         users_match = re.match(r'^/users$', command)
+        cars_match = re.match(r'^/cars$', command)
+        rented_cars_match = re.match(r'^/rented_cars$', command)
         status_match = re.match(r'^/status$', command)
         create_user_match = re.match(r'^/create user ([A-Za-z]+) ([\d]+)', command)
         login_match = re.match(r'^/login ([A-Za-z]+)', command)
@@ -171,6 +186,10 @@ class Terminal(object):
             self.create_car(create_car_match.group(1))
         elif users_match:
             self.users()
+        elif cars_match:
+            print self.manager.cars
+        elif rented_cars_match:
+            print self.manager.rented_cars
         elif status_match:
             self.status()
         elif pay_match:
@@ -190,10 +209,11 @@ if __name__=='__main__':
     terminal = Terminal()
 
     # create cars in initialization
-    init_file = open('commands.txt', 'r')
-    for f in init_file:
-        terminal.command(f)
-    init_file.close()
+    #init_file = open('commands.txt', 'r')
+    #for f in init_file:
+    
+    #    terminal.command(f)
+    #init_file.close()
 
     while 1:
         command = raw_input('\n> ')

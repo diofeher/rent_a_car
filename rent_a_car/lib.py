@@ -36,8 +36,9 @@ class User(object):
     
     def pay(self):
         if self.debit is not None:
+            debit = self.debit
             self.debit = None
-            return True
+            return debit[0]
         else:
             return False
     
@@ -60,9 +61,10 @@ class Car(object):
         self.license_plate = license_plate
         self.model = model
         self.brand = brand
-        
+    
+    
     def __repr__(self):
-        return "<Car: %s>" % self.license_plate
+        return "<Car: %s>" % (self.license_plate)
 
 
 class CarRental(object):
@@ -85,6 +87,7 @@ class Manager(object):
         self.users = {}
         self.rentals = {}
         self.cars = {}
+        self.rented_cars = {}
     
     
     def create_rental(self):
@@ -124,3 +127,12 @@ class Manager(object):
         car = Car(license_plate, model, brand)
         self.cars.update({license_plate:car})
         return car
+
+    def unrent(self, license_plate):
+        del self.rented_cars[license_plate]
+
+    def rent_a_car(self, car):
+        if car.license_plate not in self.rented_cars:
+            self.rented_cars.update({car.license_plate:True})
+            return car
+            
