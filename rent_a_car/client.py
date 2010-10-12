@@ -24,7 +24,7 @@ HELP = """
 There are 4 commands:
 
 To rent a car:
-    /rent <car_number>
+    /rent <license_plate>
 
 To see your status:
     /status
@@ -54,8 +54,9 @@ class Terminal(object):
         locator = naming.NameServerLocator()
         self.ns = locator.getNS()
         
-        car_rental_uri = self.ns.resolve('car_rental')
-        self.car_rental = core.getAttrProxyForURI(car_rental_uri)
+        manager_uri = self.ns.resolve('manager')
+        self.manager = core.getAttrProxyForURI(manager_uri)
+        self.car_rental = self.manager.create_rental()
         
         # Set the User_URI
         # self.user_uri = self.ns.resolve('user')
@@ -66,7 +67,7 @@ class Terminal(object):
     def login(self, name):
         if not self.logged:
             try:
-                user = self.car_rental.search_user(name)
+                user = self.manager.search_user(name)
                 self.user = user
                 self.logged = True
                 print '- Logged'
@@ -92,11 +93,10 @@ class Terminal(object):
             name = match.group(1)
             cpf = match.group(2)
             print '- Creating user...'
-            self.user = self.car_rental.create_user(name, cpf)
+            self.user = self.manager.create_user(name, cpf)
             self.logged = True
             print '- User created'
             print "- Automatically logged - Don't need to log in."
-            #return user
         else:
             print '- Not created'
     
@@ -109,7 +109,7 @@ class Terminal(object):
     
     
     def users(self):
-        print self.car_rental.users
+        print self.manager.users
     
     
     def exit(self):

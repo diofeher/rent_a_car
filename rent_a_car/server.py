@@ -16,13 +16,16 @@ if __name__=="__main__":
     daemon.useNameServer(ns)
 
     try:
-        ns.unregister('car_rental')
+        ns.unregister('manager')
     except errors.NamingError, e:
         print e
     
-    car_rental = core.ObjBase()
-    car_rental.delegateTo(lib.CarRental())
-    daemon.connect(car_rental, 'car_rental')
+    manager = core.ObjBase()
+    manager.delegateTo(lib.Manager())
+    #lib.init_server(car_rental)
+    daemon.connect(manager, 'manager')
+    
+
     
     # enter server loop
     print "Started server..."
