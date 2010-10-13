@@ -112,6 +112,7 @@ class Manager(object):
     def rent(self, user, car, car_rental):
         """
         Used to rent a car
+        @param user: User
         @param car: Car
         @param car_rental: CarRental
         """

@@ -180,7 +180,7 @@ class Terminal(object):
     
     def command(self, command):
         """
-        Direct command to right function
+        Point command to the right method
         """
         # Building regex matches
         exit_match = re.match(r'^/exit$', command)
@@ -196,7 +196,7 @@ class Terminal(object):
         create_user_match = re.match(r'^/create user ([A-Za-z0-9]+) ([\d]+)', command)
         login_match = re.match(r'^/login ([A-Za-z]+)', command)
         
-        # Directing
+        # Pointing command to methods
         
         if exit_match:
             self.exit()
@@ -227,15 +227,10 @@ class Terminal(object):
 
 
 if __name__=='__main__':
+    # initialization of pyro client
     core.initClient()
+    
     terminal = Terminal()
-    
-    # create cars in initialization
-    #init_file = open('commands.txt', 'r')
-    #for f in init_file:
-    
-    #    terminal.command(f)
-    #init_file.close()
     
     while 1:
         command = raw_input('\n> ')
