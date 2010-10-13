@@ -9,12 +9,15 @@ Copyright (c) 2010 CobraTeam. All rights reserved.
 from Pyro import core, naming, errors
 import lib
 
-if __name__=="__main__":
+def main():
+    """
+    server script
+    """
     core.initServer()
     daemon = core.Daemon()
     ns = naming.NameServerLocator().getNS()
     daemon.useNameServer(ns)
-
+    
     try:
         ns.unregister('manager')
     except errors.NamingError, e:
@@ -25,9 +28,12 @@ if __name__=="__main__":
     #lib.init_server(car_rental)
     daemon.connect(manager, 'manager')
     
-
     
     # enter server loop
     print "Started server..."
     daemon.requestLoop()
+
+
+if __name__=="__main__":
+    main()
         
