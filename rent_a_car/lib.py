@@ -82,11 +82,11 @@ class Manager(object):
         """
         Method to look for user
         """
-        return self.users[name]
+        return self.users.get(name)
     
     
     def search_car(self, license_plate):
-        return self.cars[license_plate]
+        return self.cars.get(license_plate)
     
     
     def create_car(self, license_plate, model, brand):
@@ -101,9 +101,17 @@ class Manager(object):
         return car
     
     def unrent(self, license_plate):
+        """
+        Unrent a car
+        @param license_plate: string
+        """
         del self.rented_cars[license_plate]
     
     def rent_a_car(self, car):
+        """
+        Rent a car
+        @param car: Car
+        """
         if car.license_plate not in self.rented_cars:
             self.rented_cars.update({car.license_plate:True})
             return car
@@ -117,15 +125,25 @@ class Manager(object):
         @param car_rental: CarRental
         """
         if user not in self.debits:
-            debit = {user:car}
+            debit = {user.name:car}
             self.debits.update(debit)
             return debit
     
     
+    def check_status(self, user):
+        """
+        Check status of user debits
+        """
+        return self.debits.get(user.name)
+    
     def pay(self, user):
-        if user in self.debits:
-            debit = self.debits[user]
-            del self.debits[user]
+        """
+        Method used to pay a debit
+        @param user: User
+        """
+        if user.name in self.debits:
+            debit = self.debits[user.name]
+            del self.debits[user.name]
             return debit
         else:
             return False
@@ -139,6 +157,6 @@ class Manager(object):
         - Name: %s
         - Cpf: %s
         - Status: %s
-        """ % (user.name, user.cpf, self.debit or "No debits")
+        """ % (user.name, user.cpf, self.debits.get(user.name) or "No debits")
         return st
             

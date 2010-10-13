@@ -11,8 +11,6 @@ from Pyro import core, naming
 
 
 HELP = """
-There are 4 commands:
-
 To login:
     /login <name>
         ex.: /login diofeher
@@ -86,14 +84,13 @@ class Terminal(object):
     
     def login(self, name):
         if not self.logged:
-            try:
-                user = self.manager.search_user(name)
+            user = self.manager.search_user(name)
+            if user:
                 self.user = user
                 self.logged = True
                 print '- Logged'
-            except Exception, e:
-                print e
-                print '- Not logged'
+            else:
+                print '- Not logged (Inexistent user)'
         else:
             print 'You have already logged. Type /logout to login with other user.'
     
@@ -141,17 +138,25 @@ class Terminal(object):
         @param license_plate: string
         """
         car = self.manager.search_car(license_plate)
-        rented = self.manager.rent_a_car(car)
+        if car:
+            rented = self.manager.rent_a_car(car)
+        else:
+            print "%s don't exist." % license_plate
+            return
+            
         if not rented:
             print '%s is already rented.' % car
             return
         
+        status = self.manager.check_status(self.user)
+        if status:
+            print '- Pay your debit before rent another car.'
+            return
+        
+        
         print '- Renting...'
         debit = self.manager.rent(self.user, car, self.car_rental)
-        if debit:
-            print '- %s rented in %s.' % (car, self.car_rental)
-        else:
-            print '- Pay your debit before rent another car.'
+        print '- %s rented in %s.' % (car, self.car_rental)
     
     
     @is_logged
