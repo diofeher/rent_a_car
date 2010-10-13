@@ -5,7 +5,7 @@ To start nameserver, type:
 
     pyro-ns
 
-and then:
+and then open another shell, and type:
     
     python server.py
 
