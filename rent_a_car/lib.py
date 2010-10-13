@@ -21,36 +21,6 @@ class User(object):
     
     def __repr__(self):
         return '<User object: %s>' % self.name
-    
-    
-    def rent(self, car, car_rental):
-        """
-        Used to rent a car
-        @param car: Car
-        @param car_rental: CarRental
-        """
-        if not self.debit:
-            self.debit = car,car_rental
-            return self.debit
-    
-    
-    def pay(self):
-        if self.debit is not None:
-            debit = self.debit
-            self.debit = None
-            return debit[0]
-        else:
-            return False
-    
-    def show_status(self):
-        st = """
-        - Name: %s
-        - Cpf: %s
-        - Status: %s
-        """ % (self.name, self.cpf, self.debit or "No debits")
-        return st
-    
-    status = property(show_status)
 
 
 class Car(object):
@@ -74,20 +44,22 @@ class CarRental(object):
     def __init__(self, name):
         self.users={}
         self.name = name
-        
+    
     def __repr__(self):
         return "<CarRental: %s>" % self.name
 
 
 class Manager(object):
     """
-    docstring for Manager
+    Class used to persist states and objects.
+    If you don't persist here, objects are going to stay only in one session.
     """
     def __init__(self):
         self.users = {}
         self.rentals = {}
         self.cars = {}
         self.rented_cars = {}
+        self.debits = {}
     
     
     def create_rental(self):
@@ -127,12 +99,44 @@ class Manager(object):
         car = Car(license_plate, model, brand)
         self.cars.update({license_plate:car})
         return car
-
+    
     def unrent(self, license_plate):
         del self.rented_cars[license_plate]
-
+    
     def rent_a_car(self, car):
         if car.license_plate not in self.rented_cars:
             self.rented_cars.update({car.license_plate:True})
             return car
+    
+    
+    def rent(self, user, car, car_rental):
+        """
+        Used to rent a car
+        @param car: Car
+        @param car_rental: CarRental
+        """
+        if not self.debit:
+            self.debit = car,car_rental
+            return self.debit
+    
+    
+    def pay(self):
+        if self.debit is not None:
+            debit = self.debit
+            self.debit = None
+            return debit[0]
+        else:
+            return False
+    
+    
+    def show_status(self, user):
+        """
+        @param user: User
+        """
+        st = """
+        - Name: %s
+        - Cpf: %s
+        - Status: %s
+        """ % (user.name, user.cpf, self.debit or "No debits")
+        return st
             

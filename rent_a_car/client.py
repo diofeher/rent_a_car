@@ -13,22 +13,35 @@ from Pyro import core, naming
 HELP = """
 There are 4 commands:
 
+To login:
+    /login <name>
+        ex.: /login diofeher
+
+To logout:
+    /logout
+
 To rent a car:
     /rent <license_plate>
 
 To see your status:
     /status
 
-To create your account:
-    /create <name> <cpf>
+To create an account:
+    /create user <name> <cpf>
         ex.: /create diofeher 011111111-11
 
-To login:
-    /login <name>
-        ex.: /login diofeher
+To create a car:
+    /create car <license_plate> <model> <brand>
+        ex.: /create car XZA-1234, Kadet, Chevrolet
+
+To pay your debits:
+    /pay
 
 To see users of the system:
     /users
+
+To see rented cars:
+    /rented_cars
 """
 
 
@@ -66,8 +79,6 @@ class Terminal(object):
 #
 # To get help, type /help
 #
-# To login, type /login <name>
-#
 # To exit, type /exit
 #
 """ % self.car_rental
@@ -84,7 +95,7 @@ class Terminal(object):
                 print e
                 print '- Not logged'
         else:
-            print 'You have already log. Type /logout to login with other user.'
+            print 'You have already logged. Type /logout to login with other user.'
     
     @is_logged
     def logout(self):
@@ -94,29 +105,40 @@ class Terminal(object):
     
     
     def create_user(self, name, cpf):
-        if name and cpf and not self.logged:
-            print '- Creating user...'
-            self.user = self.manager.create_user(name, cpf)
-            self.logged = True
-            print '- User created'
-            print "- Automatically logged - Don't need to log in."
+        if name and cpf:
+            if name not in self.manager.users:
+                print '- Creating user...'
+                self.user = self.manager.create_user(name, cpf)
+                self.logged = True
+                print '- User created'
+                print "- Automatically logged - Don't need to log in."
+            else:
+                print '- Existent user. Pick another name.'
         else:
-            print '- Not created'
+            print '- Not created.'
     
     
     def create_car(self, attrs):
+        """
+        Create a car. Don't need to login.
+        """
         attrs=attrs.split(',')
+        license_plate=attrs[0]
         if len(attrs) != 3:
-            print '- Wrong number of attributes'
+            print '- Wrong number of attributes '
         else:
-            print '- Car created'
-            return self.manager.create_car(*attrs)
-    
+            if license_plate not in self.manager.cars:
+                car = self.manager.create_car(*attrs)
+                print '- Car created: %s' % car
+                return car
+            else:
+                print '- Existent license plate. Pick another.'
     
     @is_logged
     def rent(self, license_plate):
         """
-        Rent a car
+        Rent a car passing a license_plate
+        @param license_plate: string
         """
         car = self.manager.search_car(license_plate)
         rented = self.manager.rent_a_car(car)
@@ -125,7 +147,7 @@ class Terminal(object):
             return
         
         print '- Renting...'
-        debit = self.user.rent(car, self.car_rental)
+        debit = self.manager.rent(self.user, car, self.car_rental)
         if debit:
             print '- %s rented in %s.' % (car, self.car_rental)
         else:
@@ -134,7 +156,7 @@ class Terminal(object):
     
     @is_logged
     def pay(self):
-        car = self.user.pay()
+        car = self.manager.pay
         if car:
             self.manager.unrent(car.license_plate)
             print '- Payed your debit. Now you can rent other cars.'
@@ -144,7 +166,7 @@ class Terminal(object):
     
     @is_logged
     def status(self):
-        print self.user.status
+        print self.manager.show_status(self.user)
     
     
     def users(self):
@@ -171,7 +193,7 @@ class Terminal(object):
         cars_match = re.match(r'^/cars$', command)
         rented_cars_match = re.match(r'^/rented_cars$', command)
         status_match = re.match(r'^/status$', command)
-        create_user_match = re.match(r'^/create user ([A-Za-z]+) ([\d]+)', command)
+        create_user_match = re.match(r'^/create user ([A-Za-z0-9]+) ([\d]+)', command)
         login_match = re.match(r'^/login ([A-Za-z]+)', command)
         
         # Directing
@@ -207,14 +229,14 @@ class Terminal(object):
 if __name__=='__main__':
     core.initClient()
     terminal = Terminal()
-
+    
     # create cars in initialization
     #init_file = open('commands.txt', 'r')
     #for f in init_file:
     
     #    terminal.command(f)
     #init_file.close()
-
+    
     while 1:
         command = raw_input('\n> ')
         if not command:

@@ -1,11 +1,19 @@
 Usage
 =====
 
-To start server, type:
+To start nameserver, type:
 
-    pyro-ns server.py
+    pyro-ns
+
+and then:
+    
+    python server.py
 
 To start client, type:
+
+    python client.py
+
+to initiate how many clients you need.
   
 
 Original
