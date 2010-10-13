@@ -156,7 +156,7 @@ class Terminal(object):
     
     @is_logged
     def pay(self):
-        car = self.manager.pay
+        car = self.manager.pay(self.user)
         if car:
             self.manager.unrent(car.license_plate)
             print '- Payed your debit. Now you can rent other cars.'

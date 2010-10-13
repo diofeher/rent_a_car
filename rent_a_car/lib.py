@@ -116,16 +116,17 @@ class Manager(object):
         @param car: Car
         @param car_rental: CarRental
         """
-        if not self.debit:
-            self.debit = car,car_rental
-            return self.debit
+        if user not in self.debits:
+            debit = {user:car}
+            self.debits.update(debit)
+            return debit
     
     
-    def pay(self):
-        if self.debit is not None:
-            debit = self.debit
-            self.debit = None
-            return debit[0]
+    def pay(self, user):
+        if user in self.debits:
+            debit = self.debits[user]
+            del self.debits[user]
+            return debit
         else:
             return False
     
